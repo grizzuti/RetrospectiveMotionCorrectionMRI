@@ -1,11 +1,9 @@
 .vscode
-docs/
+supplementary/
 *.png
+*.eps
 *.jld
-*.old
-*.new
 Manifest.toml
-paper/
 
 
 

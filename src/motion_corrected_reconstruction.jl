@@ -9,18 +9,38 @@ struct MotionCorrectionOptionsAlternatingFISTADiff<:AbstractMotionCorrectionOpti
     options_imrecon::ImageReconstructionOptionsFISTA
     options_parest::ParameterEstimationOptionsDiff
     niter::Integer
-    niter_estimate_Lipschitz::Union{Nothing,Integer}
     verbose::Bool
     fun_history::Union{Nothing,AbstractArray}
 end
 
-motion_correction_options(; image_reconstruction_options::ImageReconstructionOptionsFISTA, parameter_estimation_options::ParameterEstimationOptionsDiff, niter::Integer, niter_estimate_Lipschitz::Union{Nothing,Integer}=nothing, verbose::Bool=false, fun_history::Bool=false) = MotionCorrectionOptionsAlternatingFISTADiff(image_reconstruction_options, parameter_estimation_options, niter, niter_estimate_Lipschitz, verbose, fun_history ? Vector{NTuple{2,Any}}(undef,niter) : nothing)
+"""
+    motion_correction_options(; image_reconstruction_options,
+                                parameter_estimation_options,
+                                niter,
+                                verbose, fun_history)
+
+Return motion correction options for alternating rigid motion estimation and image reconstruction:
+- [`image_reconstruction_options`](@ref): set via the corresponding option routine
+- [`parameter_estimation_options`](@ref): set via the corresponding option routine
+- `niter`: number of outer two-step loops
+- `verbose`, `fun_history`: for debugging purposes
+
+Note: for more details consult [this section](@ref theory).
+"""
+motion_correction_options(; image_reconstruction_options::ImageReconstructionOptionsFISTA, parameter_estimation_options::ParameterEstimationOptionsDiff, niter::Integer, verbose::Bool=false, fun_history::Bool=false) = MotionCorrectionOptionsAlternatingFISTADiff(image_reconstruction_options, parameter_estimation_options, niter, verbose, fun_history ? Vector{NTuple{2,Any}}(undef,niter) : nothing)
 
 AbstractProximableFunctions.fun_history(options::MotionCorrectionOptionsAlternatingFISTADiff) = options.fun_history
 
 
 ## Motion-corrected reconstruction algorithms
 
+"""
+    motion_corrected_reconstruction(F, d, u, θ, options)
+
+Performs retrospective motion correction of some data `d`. `F` is the Fourier operator, initialized via the package `UtilitiesForMRI`. The initial estimates for image and motion parameters are `u` and `θ`. The minimization `options` are passed via the routine [`motion_correction_options`](@ref).
+
+See this [section](@ref retromoco) for more details on the solution algorithm.
+"""
 function motion_corrected_reconstruction(F::StructuredNFFTtype2LinOp{T}, d::AbstractArray{CT,2}, u::AbstractArray{CT,3}, θ::AbstractArray{T,2}, options::MotionCorrectionOptionsAlternatingFISTADiff) where {T<:Real,CT<:RealOrComplex{T}}
 
     flag_interp = ~isnothing(options.options_parest.interp_matrix)
@@ -35,10 +55,7 @@ function motion_corrected_reconstruction(F::StructuredNFFTtype2LinOp{T}, d::Abst
         # Image reconstruction
         options.verbose && (@info string("--- Image reconstruction..."))
         flag_interp ? (θ_ = reshape(Ip*vec(θ), :, 6)) : (θ_ = θ); Fθ = F(θ_)
-        if ~isnothing(options.niter_estimate_Lipschitz)
-            options_imrecon = set_Lipschitz_constant(options.options_imrecon, T(1.1)*spectral_radius(Fθ*Fθ'; niter=options.niter_estimate_Lipschitz))
-        end
-        u = image_reconstruction(Fθ, d, u, options_imrecon)
+        u = image_reconstruction(Fθ, d, u, options.options_imrecon)
 
         # Motion-parameter estimation
         (n == options.niter) && break

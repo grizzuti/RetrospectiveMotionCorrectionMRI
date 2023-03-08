@@ -23,6 +23,27 @@ mutable struct ParameterEstimationOptionsDiff<:AbstractParameterEstimationOption
     fun_history::Union{Nothing,AbstractVector}
 end
 
+"""
+    parameter_estimation_options(; niter=10,
+                                   steplength=1f0,
+                                   λ=0f0,
+                                   scaling_diagonal=0f0, scaling_mean=0f0, scaling_id=0f0,
+                                   reg_matrix=nothing,
+                                   interp_matrix=nothing,
+                                   verbose=false,
+                                   fun_history=false)
+
+Returns parameter estimation options for the optimization problem underlying the solver [`parameter_estimation`](@ref):
+- `niter`: number of iterations
+- `steplength`
+- `λ`: weight of regularization
+- `scaling_diagonal`, `scaling_mean`, `scaling_id`: parameters associated to the pseudo-Hessian of the objective
+- `reg_matrix`: regularization weight matrix
+- `interp_matrix`: interpolation matrix
+- `verbose`, `fun_history`: for debugging purposes
+
+Note: for more details on each of these parameters, consult [this section](@ref parest).
+"""
 function parameter_estimation_options(; niter::Integer=10,
                                         steplength::Real=1f0,
                                         λ::Real=0f0,
@@ -41,6 +62,13 @@ AbstractProximableFunctions.fun_history(options::ParameterEstimationOptionsDiff)
 
 ## Parameter-estimation algorithms
 
+"""
+    parameter_estimation(F, u, d, initial_estimate::AbstractArray{T}, options)
+
+Solves the rigid-motion parameter estimation optimization problem described [here](@ref parest). `F` is a Fourier linear operator, initialized with the package `UtilitiesForMRI` (see Section [Getting started](@ref examples) for some examples on how to do it). `u` is a fixed known image, `d` given data, and `initial_estimate` a starting guess for the rigid motion parameters.
+
+For optimization `options`, refer to [`parameter_estimation_options`](@ref).
+"""
 function parameter_estimation(F::StructuredNFFTtype2LinOp{T}, u::AbstractArray{CT,3}, d::AbstractArray{CT,2}, initial_estimate::AbstractArray{T}, options::ParameterEstimationOptionsDiff) where {T<:Real,CT<:RealOrComplex{T}}
 
     # Initialize variables

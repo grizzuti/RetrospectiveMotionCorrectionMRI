@@ -1,7 +1,7 @@
 name = "RetrospectiveMotionCorrectionMRI"
 uuid = "24772341-69a6-4cfa-a9d8-04aed0acc5f5"
 authors = ["Gabrio Rizzuti <rizzuti.gabrio@gmail.com>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 AbstractLinearOperators = "bb902dec-a34b-4f3c-9707-4856bea60ee0"
