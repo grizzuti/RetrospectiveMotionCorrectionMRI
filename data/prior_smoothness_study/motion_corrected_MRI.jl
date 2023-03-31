@@ -9,7 +9,7 @@ results_folder = string(exp_folder, "results/")
 ~isdir(results_folder) && mkdir(results_folder)
 
 # Loop over motion type
-for prior_smoothness_lvl = [0, 1, 2]
+for prior_smoothness_lvl = [1, 2]
 
     # Loading data
     @info string("Exp: ", experiment_name, ", prior smoothness level: ", prior_smoothness_lvl)
@@ -149,7 +149,7 @@ for prior_smoothness_lvl = [0, 1, 2]
     prior_reg = load(string(exp_folder, data_file), "prior_reg")
     n = size(prior_reg)
     prior_reg = resample(resample(prior_reg.+0im, (n[1], n[2], div(n[3], 2^prior_smoothness_lvl)); damping_factor=damping), n)
-    @save compress=true string(results_folder, "results_smoothlvl", prior_smoothness_lvl, ".jld") u θ u_reg prior prior_reg psnr_recon psnr_conv ssim_recon ssim_conv psnr3D_recon psnr3D_conv ssim3D_recon ssim3D_conv
+    save(string(results_folder, "results_smoothlvl", prior_smoothness_lvl, ".jld"), "u", u, "θ", θ, "u_reg", u_reg, "prior", prior, "prior_reg", prior_reg, "psnr_recon", psnr_recon, "psnr_conv", psnr_conv, "ssim_recon", ssim_recon, "ssim_conv", ssim_conv, "psnr3D_recon", psnr3D_recon, "psnr3D_conv", psnr3D_conv, "ssim3D_recon", ssim3D_recon, "ssim3D_conv", ssim3D_conv)
     plot_volume_slices(abs.(u_reg); spatial_geometry=X, vmin=0, vmax=norm(ground_truth, Inf), savefile=string(figures_folder, "corrected_smoothlvl", prior_smoothness_lvl, ".png"), slices=slices, orientation=orientation)
     plot_volume_slices(abs.(prior); spatial_geometry=X, vmin=0, vmax=norm(prior, Inf), savefile=string(figures_folder, "prior_smoothlvl", prior_smoothness_lvl, ".png"), slices=slices, orientation=orientation)
     plot_volume_slices(abs.(prior_reg); spatial_geometry=X, vmin=0, vmax=norm(prior_reg, Inf), savefile=string(figures_folder, "prior_reg_smoothlvl", prior_smoothness_lvl, ".png"), slices=slices, orientation=orientation)

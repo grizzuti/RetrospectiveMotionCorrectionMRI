@@ -70,6 +70,21 @@ plot_volume_slices(abs.(corrupted2); spatial_geometry=X, vmin=0f0, vmax=norm(gro
 plot_volume_slices(abs.(u3); slices=slices, spatial_geometry=X, vmin=0f0, vmax=norm(ground_truth,Inf), savefile=string(results_folder, "corrected3_vol1_robustness.eps"), orientation=orientation)
 plot_volume_slices(abs.(corrupted3); spatial_geometry=X, vmin=0f0, vmax=norm(ground_truth,Inf), savefile=string(results_folder, "corrupted3_vol1_robustness.eps"), orientation=orientation)
 
+# Plot errors
+e1 = abs.(u1-ground_truth)/norm(ground_truth, Inf)
+e2 = abs.(u2-ground_truth)/norm(ground_truth, Inf)
+e3 = abs.(u3-ground_truth)/norm(ground_truth, Inf)
+plot_volume_slices(e1; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected1_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e2; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected2_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e3; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected3_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+e1 = abs.(corrupted1-ground_truth)/norm(ground_truth, Inf)
+e2 = abs.(corrupted2-ground_truth)/norm(ground_truth, Inf)
+e3 = abs.(corrupted3-ground_truth)/norm(ground_truth, Inf)
+plot_volume_slices(e1; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrupted1_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e2; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrupted2_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e3; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrupted3_vol1_robustness_error.eps"), orientation=orientation, cmap="Reds")
+close("all")
+
 # Plot results (detail)
 h = spacing(X)
 c = (div(nx,2)+21, div(ny,2)+25)

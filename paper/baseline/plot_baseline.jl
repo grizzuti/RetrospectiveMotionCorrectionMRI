@@ -46,6 +46,14 @@ plot_volume_slices(abs.(corrupted2); spatial_geometry=X, vmin=0f0, vmax=norm(gro
 plot_volume_slices(abs.(u3); slices=slices, spatial_geometry=X, vmin=0f0, vmax=norm(ground_truth,Inf), savefile=string(results_folder, "corrected3_vol1_baseline.eps"), orientation=orientation)
 plot_volume_slices(abs.(corrupted3); spatial_geometry=X, vmin=0f0, vmax=norm(ground_truth,Inf), savefile=string(results_folder, "corrupted3_vol1_baseline.eps"), orientation=orientation)
 
+# Plot errors
+e1 = abs.(u1-ground_truth)/norm(ground_truth, Inf)
+e2 = abs.(u2-ground_truth)/norm(ground_truth, Inf)
+e3 = abs.(u3-ground_truth)/norm(ground_truth, Inf)
+plot_volume_slices(e1; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected1_vol1_baseline_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e2; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected2_vol1_baseline_error.eps"), orientation=orientation, cmap="Reds")
+plot_volume_slices(e3; slices=slices, spatial_geometry=X, vmin=0f0, vmax=0.25f0, savefile=string(results_folder, "corrected3_vol1_baseline_error.eps"), orientation=orientation, cmap="Reds")
+
 # Plot motion parameters
 θ1_min =  minimum(θ1; dims=1); θ1_max = maximum(θ1; dims=1); Δθ1 = θ1_max-θ1_min; θ1_middle = (θ1_min+θ1_max)/2
 Δθ1 = [ones(1,3)*max(Δθ1[1:3]...)/2 ones(1,3)*max(Δθ1[4:end]...)/2]
